@@ -25,8 +25,9 @@ class Embeddings:
             where for each i, vectors[i] is the embedding for words[i]
         """
         self.words = list(words)
-        self.indices = {w: i for i, w in enumerate(words)}
+        self.indices = {w: i for i, w in enumerate(words)} #iterable of tuples -> dictionary
         self.vectors = vectors
+
 
     def __len__(self):
         return len(self.words)
@@ -42,7 +43,13 @@ class Embeddings:
         :return: A 2D array of shape (len(words), embedding_size) where
             for each i, the ith row is the embedding for words[i]
         """
-        raise NotImplementedError("Problem 1b has not been completed yet!")
+        embed_array = []
+        for word in words:
+            index = self.indices[word]
+            embed_array.append(index)
+
+        return self.vectors[embed_array]
+        #raise NotImplementedError("Problem 1b has not been completed yet!")
 
     @classmethod
     def from_file(cls, filename: str) -> "Embeddings":
@@ -53,4 +60,17 @@ class Embeddings:
         :param filename: The name of the file containing the embeddings
         :return: An Embeddings object containing the loaded embeddings
         """
-        raise NotImplementedError("Problem 1b has not been completed yet!")
+        words = []
+        embeds = []
+
+        for line in open(filename, 'r'):
+            line_list = line.strip().split()
+            words.append(line_list[0])
+            embeds.append(line_list[1:])
+
+        for i in range(len(embeds)):
+           embeds[i] = [float(x) for x in embeds[i]]
+
+        embeds = np.array(embeds, dtype=np.float64)
+        return cls(words, embeds)
+        #raise NotImplementedError("Problem 1b has not been completed yet!")
