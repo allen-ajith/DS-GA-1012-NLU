@@ -25,7 +25,7 @@ def preprocess_dataset(dataset: Dataset, tokenizer: BertTokenizerFast) \
     :return: The dataset, prepreprocessed using the tokenizer
     """
 
-    return tokenizer(dataset['text'], padding=True, truncation=True, max_length=512,)
+    return tokenizer(dataset['text'], truncation=True, padding=True, max_length=512)
     
 
 
