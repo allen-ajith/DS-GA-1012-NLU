@@ -25,15 +25,9 @@ def preprocess_dataset(dataset: Dataset, tokenizer: BertTokenizerFast) \
     :return: The dataset, prepreprocessed using the tokenizer
     """
 
+    return dataset.map(lambda ex : tokenizer(ex['text'], padding=True, truncation=True, max_length=512,),
+                batched = True)
     
-    return tokenizer(
-        dataset,
-        padding = True,
-        max_length = 512,
-        
-
-    )
-    raise NotImplementedError("Problem 1d has not been completed yet!")
 
 
 def init_model(trial: Any, model_name: str, use_bitfit: bool = False) -> \
