@@ -24,6 +24,9 @@ def preprocess_dataset(dataset: Dataset, tokenizer: BertTokenizerFast) \
     :param tokenizer: A tokenizer
     :return: The dataset, prepreprocessed using the tokenizer
     """
+
+    tokenized_dataset = tokenizer(dataset)
+    return tokenized_dataset
     raise NotImplementedError("Problem 1d has not been completed yet!")
 
 
