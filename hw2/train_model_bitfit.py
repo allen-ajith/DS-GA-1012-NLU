@@ -105,6 +105,9 @@ def init_trainer(model_name: str, train_data: Dataset, val_data: Dataset,
         num_train_epochs=4,                        
         evaluation_strategy="epoch",
         save_strategy="epoch",
+        disable_tqdm=True,
+        metric_for_best_model="eval_accuracy",  
+        save_total_limit=1  # Keep only the best model
     )
 
     def model_init(trial=None):
@@ -175,5 +178,11 @@ if __name__ == "__main__":  # Use this script to train your model
 
     # Train and save the best hyperparameters
     best = trainer.hyperparameter_search(**hyperparameter_search_settings())
+
+    # Save the best model path to a textfile
+    best_model_path = f"{trainer.args.output_dir}/{best.run_id}"
+    with open("best_model_path_bitfit.txt", "w") as f:
+        f.write(best_model_path)
+
     with open("train_results_with_bitfit.p", "wb") as f:
         pickle.dump(best, f)

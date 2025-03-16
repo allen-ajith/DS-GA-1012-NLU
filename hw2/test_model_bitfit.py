@@ -37,8 +37,7 @@ def init_tester(directory: str) -> Trainer:
         output_dir="test_results",
         per_device_eval_batch_size=8,
         do_train=False,
-        do_eval=True,
-        evaluation_strategy="no",
+        disable_tqdm=True
     )
 
     return Trainer(
@@ -61,7 +60,12 @@ if __name__ == "__main__":  # Use this script to test your model
     imdb["test"] = preprocess_dataset(imdb["test"], tokenizer)
 
     # Set up tester
-    tester = init_tester("path_to_your_best_model")
+    # Load the best model path
+    with open("best_model_path_bitfit.txt", "r") as f:
+        best_model_path = f.read().strip()
+
+    # Now use this path when initializing tester
+    tester = init_tester(best_model_path)
 
     # Test
     results = tester.predict(imdb["test"])

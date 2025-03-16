@@ -37,8 +37,6 @@ def init_tester(directory: str) -> Trainer:
         output_dir="test_results",
         per_device_eval_batch_size=8,
         do_train=False,
-        do_eval=True,
-        evaluation_strategy="no",
     )
 
     return Trainer(
