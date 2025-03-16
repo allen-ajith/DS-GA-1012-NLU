@@ -109,7 +109,7 @@ def init_trainer(model_name: str, train_data: Dataset, val_data: Dataset,
     )
 
     return Trainer(
-        model_init=init_model(None, model_name,use_bitfit),
+        model_init=lambda trial=None: init_model(trial, model_name, use_bitfit)
         args=training_args,
         train_dataset=train_data,
         eval_dataset=val_data,
