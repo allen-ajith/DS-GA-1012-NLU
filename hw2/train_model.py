@@ -108,16 +108,17 @@ def init_trainer(model_name: str, train_data: Dataset, val_data: Dataset,
         metric_for_best_model="eval_accuracy",
     )
 
-    def model_init_wrapper(trial=None):
+    def model_init(trial=None):
         return init_model(trial, model_name, use_bitfit)
 
-    return Trainer(
-        model_init=model_init_wrapper,
+    trainer = Trainer(
         args=training_args,
         train_dataset=train_data,
         eval_dataset=val_data,
         compute_metrics=compute_metrics,
     )
+    trainer.model_init=model_init,
+    return trainer 
 
 
 def hyperparameter_search_settings() -> Dict[str, Any]:
