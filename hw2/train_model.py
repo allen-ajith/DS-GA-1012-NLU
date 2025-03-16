@@ -98,14 +98,13 @@ def init_trainer(model_name: str, train_data: Dataset, val_data: Dataset,
         return accuracy.compute(predictions=predictions, references=labels)
 
     training_args = TrainingArguments(
-        output_dir="checkpoints",
-        per_device_train_batch_size=8,    # From BERT-tiny paper
+        output_dir="checkpoints_bitfit",
+        per_device_train_batch_size=8,    
+        per_device_eval_batch_size = 8,
         learning_rate=3e-4,                
         num_train_epochs=4,                        
         evaluation_strategy="epoch",
         save_strategy="epoch",
-        load_best_model_at_end=True,
-        metric_for_best_model="eval_accuracy",
     )
 
     def model_init(trial=None):
@@ -131,19 +130,25 @@ def hyperparameter_search_settings() -> Dict[str, Any]:
 
     :return: Keyword arguments for Trainer.hyperparameter_search
     """
+
+    search_space = {
+        "learning_rate": [3e-4, 1e-4, 5e-5, 3e-5],
+        "per_device_train_batch_size": [8, 16, 32, 64, 128],
+    }
     return {
         "direction": "maximize", 
+        "compute_objective": lambda metrics: metrics["eval_accuracy"],
         "n_trials": 20,  
         "hp_space": lambda trial: {
             "learning_rate": trial.suggest_categorical(
-                "learning_rate", [3e-4, 1e-4, 5e-5, 3e-5]
+                "learning_rate", [3e-4, 1e-4, 5e-5, 3e-5] #  From BERT repo
             ),
             "per_device_train_batch_size": trial.suggest_categorical(
-                "per_device_train_batch_size", [8, 16, 32, 64, 128]
-            ),
-            "num_train_epochs": trial.suggest_categorical("num_train_epochs", [4]),  #4 in the repo
+                "per_device_train_batch_size", [8, 16, 32, 64, 128] #  From BERT repo
+            )
         },
         "backend": "optuna",
+        "sampler": optuna.samplers.GridSampler(search_space)
     }
 
 
@@ -170,5 +175,5 @@ if __name__ == "__main__":  # Use this script to train your model
 
     # Train and save the best hyperparameters
     best = trainer.hyperparameter_search(**hyperparameter_search_settings())
-    with open("train_results.p", "wb") as f:
+    with open("train_results_with_bitfit.p", "wb") as f:
         pickle.dump(best, f)

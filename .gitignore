@@ -1,1 +1,11 @@
+# Ignore DS_Store files (macOS specific)
 .DS_Store
+
+# Ignore model weights files
+*.pth
+*.pt
+
+# Ignore Python bytecode files
+__pycache__/
+*.pyc
+*.pyo
