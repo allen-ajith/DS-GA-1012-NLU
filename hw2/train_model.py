@@ -44,7 +44,7 @@ def preprocess_dataset(dataset: Dataset, tokenizer: BertTokenizerFast) \
     
 
 
-def init_model(trial: Any, model_name: str, use_bitfit: bool = False) -> \
+def init_model(trial: Any = None, model_name: str, use_bitfit: bool = False) -> \
         BertForSequenceClassification:
     """
     Problem 2a: Implement this function.
