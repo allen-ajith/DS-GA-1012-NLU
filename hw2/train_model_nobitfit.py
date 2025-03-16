@@ -171,9 +171,9 @@ if __name__ == "__main__":  # Use this script to train your model
 
     # Set up trainer
     trainer = init_trainer(model_name, imdb["train"], imdb["val"],
-                           use_bitfit=True)
+                           use_bitfit=False)
 
     # Train and save the best hyperparameters
     best = trainer.hyperparameter_search(**hyperparameter_search_settings())
-    with open("train_results_with_bitfit.p", "wb") as f:
+    with open("train_results_without_bitfit.p", "wb") as f:
         pickle.dump(best, f)
