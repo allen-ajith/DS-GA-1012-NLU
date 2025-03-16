@@ -2,6 +2,7 @@
 Code for Problem 1 of HW 2.
 """
 import pickle
+import numpy as np
 
 import evaluate
 from datasets import load_dataset
@@ -9,6 +10,12 @@ from transformers import BertTokenizerFast, BertForSequenceClassification, \
     Trainer, TrainingArguments
 
 from train_model import preprocess_dataset
+
+def compute_metrics(eval_pred):
+    accuracy = evaluate.load("accuracy")
+    logits, labels = eval_pred
+    predictions = np.argmax(logits, axis=-1)
+    return accuracy.compute(predictions=predictions, references=labels)
 
 
 def init_tester(directory: str) -> Trainer:
@@ -23,7 +30,22 @@ def init_tester(directory: str) -> Trainer:
         saved
     :return: A Trainer used for testing
     """
-    raise NotImplementedError("Problem 2b has not been completed yet!")
+
+    model = BertForSequenceClassification.from_pretrained(directory)
+
+    training_args = TrainingArguments(
+        output_dir="test_results",
+        per_device_eval_batch_size=8,
+        do_train=False,
+        do_eval=True,
+        evaluation_strategy="no",
+    )
+
+    return Trainer(
+        model=model,
+        args=training_args,
+        compute_metrics=compute_metrics
+    )
 
 
 if __name__ == "__main__":  # Use this script to test your model
