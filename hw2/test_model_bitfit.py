@@ -65,5 +65,5 @@ if __name__ == "__main__":  # Use this script to test your model
 
     # Test
     results = tester.predict(imdb["test"])
-    with open("test_results.p", "wb") as f:
+    with open("test_results_with_bitfit.p", "wb") as f:
         pickle.dump(results, f)
