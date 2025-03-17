@@ -17,6 +17,8 @@ def print_pickle_file(file_path):
 def main():
     # Ask the user for a directory path
     directory = input("Enter the path to the directory containing pickle files: ").strip()
+    if not directory:  # This checks if the string is empty
+        directory = "/Users/allen/Desktop/NLU/nlu_s25/hw2/checkpoints"
     
     # Check if the directory exists
     if not os.path.isdir(directory):
