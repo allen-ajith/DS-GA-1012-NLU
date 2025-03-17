@@ -3,6 +3,8 @@ Code for Problem 1 of HW 2.
 """
 import pickle
 from typing import Any, Dict
+import os 
+import re
 
 import evaluate
 import numpy as np
@@ -106,8 +108,6 @@ def init_trainer(model_name: str, train_data: Dataset, val_data: Dataset,
         evaluation_strategy="epoch",
         save_strategy="epoch",
         disable_tqdm=True,
-        metric_for_best_model="eval_accuracy",  
-        save_total_limit=1  # Keep only the best model
     )
 
     def model_init(trial=None):
@@ -180,7 +180,12 @@ if __name__ == "__main__":  # Use this script to train your model
     best = trainer.hyperparameter_search(**hyperparameter_search_settings())
 
     # Save the best model path to a textfile
-    best_model_path = f"{trainer.args.output_dir}/{best.run_id}"
+    best_model_path = os.path.join(
+    f"{trainer.args.output_dir}/run-{best.run_id}", 
+    max(
+        os.listdir(f"{trainer.args.output_dir}/run-{best.run_id}"),
+        key=lambda x: int(re.search(r"(\d+)", x).group(1)) if re.search(r"(\d+)", x) else 0
+    ))
     with open("best_model_path_nobitfit.txt", "w") as f:
         f.write(best_model_path)
     
