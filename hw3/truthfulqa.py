@@ -215,7 +215,8 @@ class MultipleChoicePipeline(Pipeline):
         logits_scores = {}
         input_ids = input_["input_ids"]
         attention_mask = input_["attention_mask"]
-        outputs = self.model(input_ids, attention_mask=attention_mask)
+        with torch.no_grad():
+            outputs = self.model(input_ids, attention_mask=attention_mask)
         logits = outputs.logits
         logits_scores["input_ids"] = input_ids
         logits_scores["logits"] = logits
@@ -240,9 +241,41 @@ class MultipleChoicePipeline(Pipeline):
             responds to question i and column j corresponds to answer
             choice j
         """
-        logits = outputs["logits"]
-        input_ids = outputs["input_ids"]
-        raise NotImplementedError("Problem 2d has not been completed yet!")
+        logits = outputs["logits"] # Shape: [batch_size, sequence_length, vocab_size]
+        input_ids = outputs["input_ids"] # Shape: [batch_size, sequence_length]
+        num_choices = self.num_choices
+        batch_size, sequence_length = input_ids.shape
+        num_questions = batch_size // num_choices
+
+        # print(f"Batch size: {batch_size}, Sequence length: {sequence_length}, num_questions: {num_questions}, num_choices: {num_choices}")
+        # print(f"Logits shape: {logits.shape}")
+        # print(f"Input IDs shape: {input_ids.shape}")
+
+        shifted_logits = logits[..., :-1, :].contiguous() # Shape: [batch_size, sequence_length-1, vocab_size]
+        shifted_input_ids = input_ids[..., 1:].contiguous() # Shape: [batch_size, sequence_length-1]
+
+        # print(f"Shifted logits shape: {shifted_logits.shape}")
+        # print(f"Shifted input IDs shape: {shifted_input_ids.shape}")
+
+        loss = self.loss_fn(
+            shifted_logits.view(-1, shifted_logits.size(-1)), # Shape: [batch_size * seq_len, vocab_size]
+            shifted_input_ids.view(-1) # Shape: [batch_size * seq_len]
+        )
+
+        # print(f"Loss shape: {loss.shape}")
+        
+        loss = loss.view(batch_size, -1) # Shape: [batch_size, seq_len-1]
+        
+        sequence_losses = loss.sum(dim=1)
+        
+        # Reshape to [num_questions, num_choices]
+        loss_matrix = sequence_losses.view(num_questions, self.num_choices)
+        
+
+        predicted_answers = torch.argmin(loss_matrix, dim=1)
+
+        return Output(loss_matrix, predicted_answers)
+
 
 
 def run_model(pipeline: MultipleChoicePipeline, dataset: Dataset,
