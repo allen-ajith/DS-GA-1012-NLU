@@ -247,7 +247,6 @@ class MultipleChoicePipeline(Pipeline):
         batch_size, sequence_length = input_ids.shape
         num_questions = batch_size // num_choices
 
-        # print(f"Batch size: {batch_size}, Sequence length: {sequence_length}, num_questions: {num_questions}, num_choices: {num_choices}")
         # print(f"Logits shape: {logits.shape}")
         # print(f"Input IDs shape: {input_ids.shape}")
 
