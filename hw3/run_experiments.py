@@ -56,6 +56,9 @@ def main():
     # Demos + System Prompt
     run_command("python truthfulqa.py facebook/opt-1.3b --system-prompt 'Actually,'")
 
+    #Demos + System Prompt changed for Extra credit
+    run_command("python truthfulqa.py facebook/opt-2.7b --system-prompt 'Truthfully,'")
+
     print("\nAll experiments completed! Results logged in experiment_results.log.")
 
 if __name__ == "__main__":
