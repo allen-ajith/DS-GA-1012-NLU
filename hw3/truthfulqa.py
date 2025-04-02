@@ -195,7 +195,7 @@ class MultipleChoicePipeline(Pipeline):
             used; otherwise, they should be stored on the CPU
         """
         input_texts = self._get_input_texts(batch)
-        inputs = self.tokenizer(input_texts, return_tensors="pt", truncation=True,
+        inputs = self.tokenizer(input_texts, return_tensors="pt",
                                 padding=True)
         return inputs.to(self.device)
 
