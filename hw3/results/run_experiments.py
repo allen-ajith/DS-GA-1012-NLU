@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """
-Interactive script to run selected experiments for problems 3a and 3b.
-This script will ask which specific experiments you want to run and execute only those.
+Script to automatically run all experiments for problems 3a and 3b.
+This script is designed for running in a SLURM job without interactive input.
 """
 
 import os
 import subprocess
 import time
+import argparse
 from datetime import datetime
 
 def run_command(command, description):
@@ -34,38 +35,17 @@ def run_command(command, description):
     
     return process.returncode
 
-def get_user_selection(options, prompt):
-    """Ask user to select options from a list."""
-    print(prompt)
-    for i, option in enumerate(options, 1):
-        print(f"{i}. {option}")
-    
-    while True:
-        try:
-            selection_input = input("Enter the numbers of your selections (comma-separated, or 'all' for all options): ")
-            
-            if selection_input.lower() == 'all':
-                return list(range(len(options)))
-            
-            selections = [int(x.strip()) - 1 for x in selection_input.split(',')]
-            valid_selections = [s for s in selections if 0 <= s < len(options)]
-            
-            if not valid_selections:
-                print("No valid selections. Please try again.")
-                continue
-                
-            return valid_selections
-        except ValueError:
-            print("Invalid input. Please enter numbers separated by commas.")
-
 def main():
-    print("\nTruthfulQA Experiment Runner for Problems 3a and 3b\n")
+    parser = argparse.ArgumentParser(description="Run all TruthfulQA experiments for problems 3a and 3b")
+    parser.add_argument("--debug", action="store_true", help="Run in debug mode (only 10 questions)")
+    args = parser.parse_args()
     
-    # Ask if debug mode should be used
-    debug_mode = input("Run in debug mode (only 10 questions)? (y/n): ").lower().startswith('y')
-    debug_flag = "--debug" if debug_mode else ""
+    debug_flag = "--debug" if args.debug else ""
     
-    # Define experiment options
+    # Define all experiments to run
+    experiments = []
+    
+    # Problem 3a: Scaling Laws Experiments
     problem_3a_models = [
         "facebook/opt-125m",
         "facebook/opt-350m",
@@ -74,69 +54,42 @@ def main():
         "facebook/opt-6.7b"
     ]
     
+    for model in problem_3a_models:
+        model_name = model.split("/")[-1]
+        experiments.append({
+            "description": f"Problem 3a - Testing {model_name}",
+            "command": f"python truthfulqa.py {model} {debug_flag}"
+        })
+    
+    # Problem 3b: Prompt Engineering Experiments
     problem_3b_configs = [
         {"name": "Zero-Shot (no demos, no system prompt)", 
-         "command": "python truthfulqa.py facebook/opt-1.3b --no-demos"},
+         "command": f"python truthfulqa.py facebook/opt-1.3b --no-demos {debug_flag}"},
         {"name": "Demos Only", 
-         "command": "python truthfulqa.py facebook/opt-1.3b"},
+         "command": f"python truthfulqa.py facebook/opt-1.3b {debug_flag}"},
         {"name": "System Prompt Only", 
-         "command": "python truthfulqa.py facebook/opt-1.3b --system-prompt 'Actually,' --no-demos"},
+         "command": f"python truthfulqa.py facebook/opt-1.3b --system-prompt 'Actually,' --no-demos {debug_flag}"},
         {"name": "Demos + System Prompt", 
-         "command": "python truthfulqa.py facebook/opt-1.3b --system-prompt 'Actually,'"}
+         "command": f"python truthfulqa.py facebook/opt-1.3b --system-prompt 'Actually,' {debug_flag}"}
     ]
     
-    # Ask which problems to run
-    print("\nWhich problems would you like to run?")
-    problems = ["Problem 3a (Scaling Laws)", "Problem 3b (Prompt Engineering)"]
-    problem_selections = get_user_selection(problems, "Available problems:")
-    
-    experiments_to_run = []
-    
-    # For Problem 3a, ask which models to run
-    if 0 in problem_selections:  # Problem 3a selected
-        model_selections = get_user_selection(problem_3a_models, "\nWhich OPT models would you like to test for Problem 3a?")
-        for idx in model_selections:
-            model = problem_3a_models[idx]
-            model_name = model.split("/")[-1]
-            experiments_to_run.append({
-                "description": f"Problem 3a - Testing {model_name}",
-                "command": f"python truthfulqa.py {model} {debug_flag}"
-            })
-    
-    # For Problem 3b, ask which prompting configurations to run
-    if 1 in problem_selections:  # Problem 3b selected
-        config_selections = get_user_selection(
-            [config["name"] for config in problem_3b_configs], 
-            "\nWhich prompting configurations would you like to test for Problem 3b?"
-        )
-        for idx in config_selections:
-            config = problem_3b_configs[idx]
-            experiments_to_run.append({
+    # Already run the facebook/opt-1.3b with demos in Problem 3a, skip the second configuration (Demos Only) to avoid duplication
+    for i, config in enumerate(problem_3b_configs):
+        if i != 1:  # Skip the "Demos Only" configuration as it's duplicated in Problem 3a
+            experiments.append({
                 "description": f"Problem 3b - {config['name']}",
-                "command": f"{config['command']} {debug_flag}"
+                "command": config['command']
             })
     
-    # Check if we have experiments to run
-    if not experiments_to_run:
-        print("\nNo experiments selected. Exiting.")
-        return
+    # Run all experiments
+    print(f"\nStarting all experiments. Total experiments: {len(experiments)}")
+    print("Debug mode:", "ON" if args.debug else "OFF")
     
-    # Confirm the experiments to run
-    print("\nConfirm running the following experiments:")
-    for i, exp in enumerate(experiments_to_run, 1):
-        print(f"{i}. {exp['description']}")
-    
-    confirm = input("\nProceed with these experiments? (y/n): ")
-    if not confirm.lower().startswith('y'):
-        print("Aborted. No experiments will be run.")
-        return
-    
-    # Run the selected experiments
-    print("\nStarting selected experiments...")
-    for exp in experiments_to_run:
+    for i, exp in enumerate(experiments, 1):
+        print(f"\nExperiment {i}/{len(experiments)}")
         run_command(exp["command"], exp["description"])
     
-    print("\nAll selected experiments completed!")
+    print("\nAll experiments completed!")
     print("Results should be available in the 'results' directory.")
 
 if __name__ == "__main__":

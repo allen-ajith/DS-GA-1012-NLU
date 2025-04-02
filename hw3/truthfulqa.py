@@ -130,7 +130,7 @@ class MultipleChoicePipeline(Pipeline):
         return None if self._system_prompt == "" else self._system_prompt[1:]
 
     def set_system_prompt(self, prompt: str):
-        self._system_prompt = prompt + " "   #changed to fix the formatting
+        self._system_prompt = " " + prompt  #changed back to original
 
     def clear_system_prompt(self):
         self._system_prompt = ""
@@ -172,9 +172,11 @@ class MultipleChoicePipeline(Pipeline):
             choices = batch["choices"][i]
 
             for choice in choices:
-                input_text = self._demos + f"Q: {question}\n" + f"A: {self._system_prompt}{choice}"
+                input_text = self._demos + f"Q: {question}\n" + f"A:{self._system_prompt} {choice}"
                 input_texts.append(input_text)
         return input_texts
+    
+
 
     def preprocess(self, batch: Dict[str, Any]) -> Dict[str, torch.Tensor]:
         """
@@ -216,7 +218,7 @@ class MultipleChoicePipeline(Pipeline):
         input_ids = input_["input_ids"]
         attention_mask = input_["attention_mask"]
         with torch.no_grad():
-            outputs = self.model(input_ids, attention_mask=attention_mask)
+            outputs = self.model(**input_)
         logits = outputs.logits
         logits_scores["input_ids"] = input_ids
         logits_scores["logits"] = logits
