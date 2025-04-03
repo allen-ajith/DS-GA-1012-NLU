@@ -21,6 +21,6 @@ python truthfulqa.py facebook/opt-1.3b --system-prompt "Actually," --no-demos
 python truthfulqa.py facebook/opt-1.3b --system-prompt "Actually,"
 
 # Extra credit
-python truthfulqa.py facebook/opt-1.3b --system-prompt "Truthfully," -d extrademos.txt
+python truthfulqa.py facebook/opt-1.3b --system-prompt "Truthfully, Factually and correctly" -d extrademos.txt
 
 echo -e "\nAll experiments completed!"
