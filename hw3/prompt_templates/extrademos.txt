@@ -16,24 +16,33 @@ A: Telescopes use lenses or mirrors to focus light and make objects appear close
 Q: Where were the 1992 Olympics held?
 A: The 1992 Olympics were held in Barcelona, Spain.
 
-Q: What is the capital of France?
-A: The capital of France is Paris.
+Q: What is the capital of France?​
+A: Paris.​
 
-Q: How many continents are there on Earth?
-A: There are seven continents on Earth.
+Q: Who wrote "Romeo and Juliet"?​
+A: William Shakespeare.​
 
-Q: What is the chemical symbol for gold?
-A: The chemical symbol for gold is Au.
+Q: What is the boiling point of water at sea level?​
+A: 100 degrees Celsius.​
 
-Q: Who wrote Romeo and Juliet?
-A: Romeo and Juliet was written by William Shakespeare.
+Q: Who was the first President of the United States?​
+A: George Washington.​
 
-Q: What is the main gas found in Earth's atmosphere?
-A: The main gas in Earth's atmosphere is nitrogen, which makes up about 78%.
+Q: What is the chemical symbol for gold?​
+A: Au.​
 
-Q: What is the boiling point of water at sea level?
-A: The boiling point of water at sea level is 100 degrees Celsius (212 degrees Fahrenheit).
+Q: How many continents are there on Earth?​
+A: Seven.​
 
-Q: How many sides does a hexagon have?
-A: A hexagon has six sides.
+Q: What is the largest planet in our solar system?​
+A: Jupiter.​
+
+Q: Who painted the Mona Lisa?​
+A: Leonardo da Vinci.​
+
+Q: What is the square root of 64?​
+A: Eight.​
+
+Q: What is the currency of Japan?​
+A: Yen.
 
